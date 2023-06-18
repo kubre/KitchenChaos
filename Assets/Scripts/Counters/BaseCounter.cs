@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BaseCounter : MonoBehaviour, IKitchenObjectParent {
-    public virtual void Interact(Player player) { }
+    public virtual void Interact(Player player) {
+        Debug.LogError("Please Implment Interact on BaseCounter ChildClass");
+    }
 
     public virtual void InteractAlternate(Player player) { }
 
