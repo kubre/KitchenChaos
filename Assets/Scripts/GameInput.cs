@@ -6,17 +6,24 @@ using UnityEngine;
 public class GameInput : MonoBehaviour {
 
     private PlayerInputActions playerInput;
-    public event EventHandler OnInteract;
+    public event EventHandler OnInteractAction;
+    public event EventHandler OnInteractAlternateAction;
 
     public void Awake() {
         playerInput = new PlayerInputActions();
         playerInput.Enable();
 
         playerInput.Player.Interact.performed += Interact_performed;
+        playerInput.Player.InteractAlternate.performed += InteractAlternate_performed;
+    }
+
+    private void InteractAlternate_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        OnInteractAlternateAction?.Invoke(this, EventArgs.Empty);
+
     }
 
     private void Interact_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
-        OnInteract?.Invoke(this, EventArgs.Empty);
+        OnInteractAction?.Invoke(this, EventArgs.Empty);
     }
 
     public Vector2 GetMovementVectorNormalized() {
