@@ -9,7 +9,7 @@ public class KitchenObject : MonoBehaviour {
 
     public KitchenObjectSO GetKitchenObjectSO() { return kitchenObjectSO; }
 
-    public IKitchenObjectParent GetKitcheObjectParent() { return kitchenObjectParent; }
+    public IKitchenObjectParent GetKitchenObjectParent() { return kitchenObjectParent; }
 
     public void SetKitchenObjectParent(IKitchenObjectParent kitchenObjectParent) {
         if (this.kitchenObjectParent != null) {
