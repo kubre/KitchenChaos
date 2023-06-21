@@ -17,7 +17,7 @@ public class PlatesCounter : BaseCounter {
     private void Update() {
         spawnPlateTimer += Time.deltaTime;
 
-        if (spawnPlateTimer > 4f) {
+        if (spawnPlateTimer > spawnPlateTimerMax) {
             spawnPlateTimer = 0f;
             if (platesSpawnedAmount < platesSpawnedAmountMax) {
                 platesSpawnedAmount++;
@@ -27,8 +27,6 @@ public class PlatesCounter : BaseCounter {
     }
 
     public override void Interact(Player player) {
-        Debug.Log(player.name + " Interacted with PlatesCounter");
-        Debug.Log(player.HasKitchenObject());
         if (!player.HasKitchenObject()) {
             if (platesSpawnedAmount > 0) {
                 platesSpawnedAmount--;

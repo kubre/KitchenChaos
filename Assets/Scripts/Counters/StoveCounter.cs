@@ -52,7 +52,7 @@ public class StoveCounter : BaseCounter, IHasProgress {
 
                         state = State.Fried;
                         burningTimer = 0f;
-                        burningReceipeSO = GetBuriningReceipeSoForInput(GetKitchenObject().GetKitchenObjectSO());
+                        burningReceipeSO = GetBurningReceipeSoForInput(GetKitchenObject().GetKitchenObjectSO());
                         OnStateChanged?.Invoke(this, new OnStateChangedEventArgs {
                             state = state
                         });
@@ -61,10 +61,10 @@ public class StoveCounter : BaseCounter, IHasProgress {
                 case State.Fried:
                     burningTimer += Time.deltaTime;
                     OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
-                        progressNormalized = burningTimer / burningReceipeSO.buringTimerMax
+                        progressNormalized = burningTimer / burningReceipeSO.burningTimerMax
                     });
 
-                    if (burningTimer >= burningReceipeSO.buringTimerMax) {
+                    if (burningTimer >= burningReceipeSO.burningTimerMax) {
                         GetKitchenObject().DestroySelf();
                         KitchenObject.SpawnKitchenObject(burningReceipeSO.output, this);
                         state = State.Burned;
@@ -80,7 +80,6 @@ public class StoveCounter : BaseCounter, IHasProgress {
                 case State.Burned:
                     break;
             }
-            Debug.Log(state);
         }
     }
 
@@ -103,11 +102,31 @@ public class StoveCounter : BaseCounter, IHasProgress {
                 }
             }
         } else {
-            if (!player.HasKitchenObject()) {
+            // There is a kitchen object on the stove
+            if (player.HasKitchenObject()) {
+                if (player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject)) {
+                    // player is holding a plate
+                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO())) {
+                        GetKitchenObject().DestroySelf();
+                    }
+                    state = State.Idle;
+                    OnStateChanged?.Invoke(this, new OnStateChangedEventArgs {
+                        state = state
+                    });
+
+                    OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                        progressNormalized = 0f
+                    });
+                }
+            } else {
                 GetKitchenObject().SetKitchenObjectParent(player);
                 state = State.Idle;
                 OnStateChanged?.Invoke(this, new OnStateChangedEventArgs {
                     state = state
+                });
+
+                OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                    progressNormalized = 0f
                 });
             }
         }
@@ -135,7 +154,7 @@ public class StoveCounter : BaseCounter, IHasProgress {
         return null;
     }
 
-    private BurningReceipeSO GetBuriningReceipeSoForInput(KitchenObjectSO kitchenObjectSO) {
+    private BurningReceipeSO GetBurningReceipeSoForInput(KitchenObjectSO kitchenObjectSO) {
         foreach (BurningReceipeSO burningReceipeSO in burningReceipeSOArray) {
             if (burningReceipeSO.input == kitchenObjectSO) {
                 return burningReceipeSO;
